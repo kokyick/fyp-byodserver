@@ -1,0 +1,111 @@
+﻿@model IEnumerable<BYOD_Server.Models.Outlets>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.merchant.biz_reg_no)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.streetname)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.unit_no)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.postal_code)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.contact_no)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.lat)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.lon)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.opening_time)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.closing_time)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.opening_status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.last_review_time)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.avg_ratings)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.total_comments)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.merchant.biz_reg_no)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.streetname)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.unit_no)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.postal_code)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.contact_no)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.lat)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.lon)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.opening_time)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.closing_time)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.opening_status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.last_review_time)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.avg_ratings)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.total_comments)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.outlet_id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.outlet_id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.outlet_id })
+        </td>
+    </tr>
+}
+
+</table>

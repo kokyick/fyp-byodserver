@@ -1,0 +1,81 @@
+﻿@model IEnumerable<BYOD_Server.Models.Merchants>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.merchantCategory.name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.user.avatar)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.biz_reg_no)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.biz_verified)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.biz_add)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.biz_postal)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.biz_name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.office_no)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.mobile_no)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.merchantCategory.name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.user.avatar)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.biz_reg_no)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.biz_verified)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.biz_add)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.biz_postal)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.biz_name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.office_no)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.mobile_no)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.merchant_id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.merchant_id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.merchant_id })
+        </td>
+    </tr>
+}
+
+</table>

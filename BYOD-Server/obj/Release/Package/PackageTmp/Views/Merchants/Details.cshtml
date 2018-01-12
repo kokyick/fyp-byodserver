@@ -1,0 +1,90 @@
+﻿@model BYOD_Server.Models.Merchants
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Merchants</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.merchantCategory.name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.merchantCategory.name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.user.avatar)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.user.avatar)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.biz_reg_no)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.biz_reg_no)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.biz_verified)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.biz_verified)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.biz_add)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.biz_add)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.biz_postal)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.biz_postal)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.biz_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.biz_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.office_no)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.office_no)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.mobile_no)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.mobile_no)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.merchant_id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

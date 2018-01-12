@@ -1,0 +1,26 @@
+﻿@model BYOD_Server.Models.outlet_product
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>outlet_product</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.merchantProduct.name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.merchantProduct.name)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.outlet_product_id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

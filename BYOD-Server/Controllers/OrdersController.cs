@@ -274,6 +274,111 @@ namespace BYOD_Server.Controllers
             }
             return Ok(OrderedFoodList);
         }
+
+        //START: edit order
+
+        // POST: api/CancelOrder
+        [Route("api/CancelOrder")]
+        [ResponseType(typeof(Orders))]
+        public async Task<IHttpActionResult> PostCancelOrder(int orderId)
+        {
+            var results = from foodordered in db.food_ordered
+                          where (orderId == foodordered.order_id)
+                          select new 
+                          {
+                              foodId = foodordered.food_ordered_id
+                          };
+
+            var OrderedFoodList = await results.ToListAsync();
+            foreach (var i in OrderedFoodList)
+            {
+                FoodOrdered food = db.food_ordered.Find(i.foodId);
+                if (food != null)
+                {
+                    //remove food in order
+                    db.food_ordered.Remove(food);
+                    db.SaveChanges();
+                }
+            }
+            //remove order
+            Orders getorder = db.Orders.Find(orderId);
+            if (getorder != null)
+            {
+                db.Orders.Remove(getorder);
+                await db.SaveChangesAsync();
+                return Ok("Removed");
+            }
+            else
+            {
+                return Ok("Orders not found");
+            }
+        }
+        // POST: api/EditOrder
+        [Route("api/EditOrder")]
+        [ResponseType(typeof(Orders))]
+        public async Task<IHttpActionResult> PostEditOrder(Orders updated_order)
+        {
+            //add to order
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            Orders getorder = db.Orders.Find(updated_order.order_id);
+            if (getorder != null)
+            {
+                getorder = updated_order;
+                await db.SaveChangesAsync();
+                return Ok(getorder);
+            }
+            else
+            {
+                return Ok("Order not found");
+            }
+        }
+        // POST: api/RemoveOrderFood
+        [Route("api/RemoveOrderFood")]
+        [ResponseType(typeof(Orders))]
+        public async Task<IHttpActionResult> PostRemoveOrderFood(int foodOrderedID)
+        {
+            //add to order
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            FoodOrdered getfood = db.food_ordered.Find(foodOrderedID);
+            if (getfood != null)
+            {
+                db.food_ordered.Remove(getfood);
+                await db.SaveChangesAsync();
+                return Ok();
+            }
+            else
+            {
+                return Ok("404 food not found");
+            }
+        }
+
+        // POST: api/addFoodOrder
+        [Route("api/addFoodOrder")]
+        [ResponseType(typeof(FoodOrdered))]
+        public async Task<IHttpActionResult> PostAddFoodOrder(FoodOrdered food)
+        {
+            //add to order
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            db.food_ordered.Add(food);
+            await db.SaveChangesAsync();
+
+            return Ok(food);
+        }
+        //END: edit order
+
         // POST: api/CashPaid
         [Route("api/CashPaid")]
         [ResponseType(typeof(Orders))]
@@ -388,29 +493,11 @@ namespace BYOD_Server.Controllers
             {
                 return BadRequest(ModelState);
             }
-            orders.order_time = DateTime.Now;
+            orders.order_time = DateTime.Now.AddHours(8);
             db.Orders.Add(orders);
             await db.SaveChangesAsync();
 
             return Ok(orders);
-        }
-
-        // POST: api/addFoodOrder
-        [Route("api/addFoodOrder")]
-        [ResponseType(typeof(FoodOrdered))]
-        public async Task<IHttpActionResult> PostAddFoodOrder(FoodOrdered food)
-        {
-            //add to order
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.food_ordered.Add(food);
-            await db.SaveChangesAsync();
-
-            return Ok(food);
         }
 
         // POST: api/addTableNum
@@ -477,7 +564,6 @@ namespace BYOD_Server.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             db.Orders.Add(orders);
             await db.SaveChangesAsync();
 

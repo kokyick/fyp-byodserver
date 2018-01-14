@@ -101,5 +101,14 @@ namespace BYOD_Server.Models
             public string startdate { get; set; }
             public string enddate { get; set; }
         }
+        public class CalculateBill
+        {
+            public int order_id { get; set; }
+            public decimal order_bill { get; set; }
+            public decimal outlet_sc { get; set; }
+            public decimal outlet_gst { get; set; }
+            public decimal mp_price { get; set; }
+            public int food_quantity { get; set; }
+        }
     }
 }

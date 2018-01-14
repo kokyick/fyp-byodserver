@@ -29,7 +29,7 @@ namespace BYOD_Server.Controllers
                           join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
                           join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
                           join m in db.Merchants on mp.merchant_id equals m.merchant_id
-                          where o.completed==false
+                          where o.completed == false
                           select new MenuBindingModels.OpenCloseOrder
                           {
                               name = mp.name,
@@ -45,8 +45,8 @@ namespace BYOD_Server.Controllers
                               table_id = o.table_id,
                               order_status = o.completed,
                               food_order_id = fo.food_ordered_id,
-                              food_comments=fo.comments,
-                              order_comment=o.comments,
+                              food_comments = fo.comments,
+                              order_comment = o.comments,
                               merchant_name = m.biz_name
                           } into t1
                           group t1 by t1.order_id into g
@@ -87,7 +87,7 @@ namespace BYOD_Server.Controllers
                               food_order_id = fo.food_ordered_id,
                               order_comment = o.comments,
                               food_comments = fo.comments,
-                              merchant_name=m.biz_name
+                              merchant_name = m.biz_name
                           } into t1
                           group t1 by t1.order_id into g
                           select g.ToList();
@@ -129,18 +129,18 @@ namespace BYOD_Server.Controllers
                           } into t1
                           group t1 by t1.order_id into g
                           select g.ToList();
-                                 //{
-                                 //    name = .name,
-                                 //    merchant_product_id = g.merchant_product_id,
-                                 //    product_image = g.FirstOrDefault().product_image,
-                                 //    dish_completed = g.FirstOrDefault().dish_completed,
-                                 //    price = g.FirstOrDefault().price,
-                                 //    merchant_id = g.FirstOrDefault().merchant_id,
-                                 //    quantity = g.FirstOrDefault().quantity,
-                                 //    order_id = g.FirstOrDefault().order_id,
-                                 //    order_bill = g.FirstOrDefault().order_bill,
-                                 //    order_status = g.FirstOrDefault().order_status
-                                 //};
+            //{
+            //    name = .name,
+            //    merchant_product_id = g.merchant_product_id,
+            //    product_image = g.FirstOrDefault().product_image,
+            //    dish_completed = g.FirstOrDefault().dish_completed,
+            //    price = g.FirstOrDefault().price,
+            //    merchant_id = g.FirstOrDefault().merchant_id,
+            //    quantity = g.FirstOrDefault().quantity,
+            //    order_id = g.FirstOrDefault().order_id,
+            //    order_bill = g.FirstOrDefault().order_bill,
+            //    order_status = g.FirstOrDefault().order_status
+            //};
 
             var OrderedFoodList = await results.ToListAsync();
             if (results == null)
@@ -162,11 +162,11 @@ namespace BYOD_Server.Controllers
                           {
                               order_id = o.order_id,
                               order_bill = o.total_bill,
-                              order_time=o.order_time,
+                              order_time = o.order_time,
                               order_status = o.completed,
-                              outlet_id=ol.outlet_id,
-                              outlet_name=ol.name,
-                              order_payment=o.paid
+                              outlet_id = ol.outlet_id,
+                              outlet_name = ol.name,
+                              order_payment = o.paid
                           };
 
             var OrdersList = await results.ToListAsync();
@@ -185,11 +185,11 @@ namespace BYOD_Server.Controllers
                           join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
                           join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
                           join o in db.Orders on fo.order_id equals o.order_id
-                          where o.order_id== orderid
+                          where o.order_id == orderid
                           select new MenuBindingModels.GetOrderedItems
                           {
                               name = mp.name,
-                              order_time=o.order_time,
+                              order_time = o.order_time,
                               merchant_product_id = mp.merchant_product_id,
                               product_image = mp.product_image,
                               dish_completed = fo.served,
@@ -229,8 +229,8 @@ namespace BYOD_Server.Controllers
                               merchant_id = mp.merchant_id,
                               quantity = fo.quantity,
                               order_id = o.order_id,
-                              order_bill=o.total_bill,
-                              order_status=o.completed,
+                              order_bill = o.total_bill,
+                              order_status = o.completed,
                               order_comment = o.comments,
                               food_comments = fo.comments
                           };
@@ -244,30 +244,37 @@ namespace BYOD_Server.Controllers
         }
         // GET: api/Orders/5
         [ResponseType(typeof(MenuBindingModels.GetOrderedItems))]
-        public async Task<IHttpActionResult> GetOneOrdersDetails(int id)
+        public async Task<IHttpActionResult> GetOneOrdersDetails(int orderid)
         {
-            var results = from fo in db.food_ordered
+            var results = from o in db.Orders
+                          join fo in db.food_ordered on o.order_id equals fo.order_id
                           join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
                           join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
-                          join o in db.Orders on fo.order_id equals o.order_id
-                          where (fo.order_id == id)
-                          select new MenuBindingModels.GetOrderedItems
+                          join m in db.Merchants on mp.merchant_id equals m.merchant_id
+                          where o.order_id == orderid
+                          select new MenuBindingModels.OpenCloseOrder
                           {
                               name = mp.name,
                               merchant_product_id = mp.merchant_product_id,
-                              product_image=mp.product_image,
+                              product_image = mp.product_image,
                               dish_completed = fo.served,
                               price = mp.price,
-                              merchant_id=mp.merchant_id,
-                              quantity=fo.quantity,
-                              order_id=o.order_id,
+                              merchant_id = mp.merchant_id,
+                              quantity = fo.quantity,
+                              order_id = o.order_id,
                               order_bill = o.total_bill,
+                              order_time = o.order_time,
+                              table_id = o.table_id,
                               order_status = o.completed,
+                              food_order_id = fo.food_ordered_id,
                               order_comment = o.comments,
-                              food_comments = fo.comments
-                          };
+                              food_comments = fo.comments,
+                              merchant_name = m.biz_name
+                          } into t1
+                          group t1 by t1.order_id into g
+                          select g.ToList();
 
-            var OrderedFoodList = await results.FirstOrDefaultAsync();
+            var OrderedFoodList = await results.ToListAsync();
             if (results == null)
             {
                 return NotFound();
@@ -284,7 +291,7 @@ namespace BYOD_Server.Controllers
         {
             var results = from foodordered in db.food_ordered
                           where (orderId == foodordered.order_id)
-                          select new 
+                          select new
                           {
                               foodId = foodordered.food_ordered_id
                           };
@@ -350,7 +357,60 @@ namespace BYOD_Server.Controllers
             FoodOrdered getfood = db.food_ordered.Find(foodOrderedID);
             if (getfood != null)
             {
+                var orderid = getfood.order_id;
                 db.food_ordered.Remove(getfood);
+
+                //recalculate order price
+
+                db.SaveChanges();
+                var checklast = from fo in db.food_ordered
+                                join o in db.Orders on fo.order_id equals o.order_id
+                                where o.order_id == orderid
+                                select new
+                                {
+                                    fo_order = fo.food_ordered_id
+                                };
+                var foodl = checklast.ToArray();
+
+                Orders order = db.Orders.Find(orderid);
+                if (foodl.Length == 0)
+                {
+                    db.Orders.Remove(order);
+                }
+                else
+                {
+                    var results = from o in db.Orders
+                                  join fo in db.food_ordered on o.order_id equals fo.order_id
+                                  join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                                  join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
+                                  join m in db.Merchants on mp.merchant_id equals m.merchant_id
+                                  join outlet in db.Outlets on op.outlet_id equals outlet.outlet_id
+                                  where o.order_id == orderid
+                                  select new MenuBindingModels.CalculateBill
+                                  {
+                                      order_id = o.order_id,
+                                      order_bill = o.total_bill,
+                                      outlet_sc = outlet.servicecharge,
+                                      outlet_gst = outlet.gst,
+                                      mp_price = mp.price,
+                                      food_quantity = fo.quantity
+                                  } into t1
+                                  group t1 by t1.order_id into g
+                                  select g.ToList();
+
+                    var OrderedFoodList = await results.ToListAsync();
+                    var foodList = OrderedFoodList.First();
+                    decimal foodsum = 0;
+
+                    foreach (var food in foodList)
+                    {
+                        foodsum += food.mp_price * food.food_quantity;
+                    }
+                    foodsum += foodsum * foodList.First().outlet_sc / 100;
+                    foodsum += foodsum * foodList.First().outlet_gst / 100;
+
+                    order.total_bill = foodsum;
+                }
                 await db.SaveChangesAsync();
                 return Ok();
             }
@@ -415,19 +475,19 @@ namespace BYOD_Server.Controllers
                 return BadRequest(ModelState);
             }
             FoodOrdered getfood = db.food_ordered.Find(fo.food_ordered_id);
-            getfood.served=true;
+            getfood.served = true;
 
             db.SaveChanges();
             var results = from foodordered in db.food_ordered
                           where (fo.order_id == foodordered.order_id)
                           select new MenuBindingModels.Foodserved
                           {
-                             served=foodordered.served
+                              served = foodordered.served
                           };
 
             var OrderedFoodList = await results.ToListAsync();
             var checker = false;
-            foreach(var i in OrderedFoodList)
+            foreach (var i in OrderedFoodList)
             {
                 if (i.served == false)
                 {
@@ -461,14 +521,14 @@ namespace BYOD_Server.Controllers
                           where (order_id == foodordered.order_id)
                           select new MenuBindingModels.Foodserved
                           {
-                              fdId= foodordered.food_ordered_id,
+                              fdId = foodordered.food_ordered_id,
                               served = foodordered.served
                           };
-             
+
             var OrderedFoodList = await results.ToListAsync();
             foreach (var i in OrderedFoodList)
             {
-                if(i.served == false)
+                if (i.served == false)
                 {
                     FoodOrdered food = db.food_ordered.Find(i.fdId);
                     food.served = true;
@@ -511,14 +571,14 @@ namespace BYOD_Server.Controllers
             {
                 return BadRequest(ModelState);
             }
-            Orders retrieveOrder=db.Orders.Find(updateinfo.order_id);
+            Orders retrieveOrder = db.Orders.Find(updateinfo.order_id);
             if (retrieveOrder != null)
             {
                 retrieveOrder.table_id = updateinfo.table_id;
                 await db.SaveChangesAsync();
             }
 
-            return Ok("Updated : "+ updateinfo.order_id + retrieveOrder);
+            return Ok("Updated : " + updateinfo.order_id + retrieveOrder);
         }
         // POST: api/PostOutletReport/
         [Route("api/PostOutletReport")]

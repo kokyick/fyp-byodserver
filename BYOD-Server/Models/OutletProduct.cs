@@ -11,7 +11,7 @@ namespace BYOD_Server.Models
     {
         [Key]
         public int outlet_product_id { get; set; }
-
+        public bool out_of_stock { get; set; }
         public int? merchant_product_id { get; set; }
         [ForeignKey("merchant_product_id")]
         public MerchantProduct merchantProduct { get; set; }

@@ -12,6 +12,8 @@ using System.Web.Http.Description;
 using BYOD_Server.Models;
 using System.Web.Http.Cors;
 using System.Data.Entity.Core.Objects;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.AspNet.Identity;
 
 namespace BYOD_Server.Controllers
 {
@@ -19,6 +21,186 @@ namespace BYOD_Server.Controllers
     public class OrdersController : ApiController
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+        private ApplicationUserManager _userManager;
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
+        //limit to user's order
+        // GET: api/GetOpenOrders/5
+        [ResponseType(typeof(MenuBindingModels.OpenCloseOrder))]
+        [Route("api/UserOpenOrders")]
+        public async Task<IHttpActionResult> GetUserOpenOrders()
+        {
+            ApplicationUser user = null;
+            try
+            {
+                user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            }
+            catch (Exception)
+            {
+            }
+            if (user != null)
+            {
+                var results = from o in db.Orders
+                              join fo in db.food_ordered on o.order_id equals fo.order_id
+                              join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                              join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
+                              join m in db.Merchants on mp.merchant_id equals m.merchant_id
+                              where o.user_id == user.Id
+                              where o.completed == false
+                              select new MenuBindingModels.OpenCloseOrder
+                              {
+                                  name = mp.name,
+                                  merchant_product_id = mp.merchant_product_id,
+                                  product_image = mp.product_image,
+                                  dish_completed = fo.served,
+                                  price = mp.price,
+                                  merchant_id = mp.merchant_id,
+                                  quantity = fo.quantity,
+                                  order_id = o.order_id,
+                                  order_bill = o.total_bill,
+                                  order_time = o.order_time,
+                                  table_id = o.table_id,
+                                  order_status = o.completed,
+                                  food_order_id = fo.food_ordered_id,
+                                  food_comments = fo.comments,
+                                  order_comment = o.comments,
+                                  merchant_name = m.biz_name
+                              } into t1
+                              group t1 by t1.order_id into g
+                              select g.ToList();
+
+                var OrderedFoodList = await results.ToListAsync();
+                if (results == null)
+                {
+                    return NotFound();
+                }
+                return Ok(OrderedFoodList);
+            }
+            else
+            {
+                return Ok("Invaild token");
+            }
+        }
+        // GET: api/GetOpenOrders/5
+        [ResponseType(typeof(MenuBindingModels.OpenCloseOrder))]
+        [Route("api/UserClosedOrders")]
+        public async Task<IHttpActionResult> GetUserClosedOrders()
+        {
+            ApplicationUser user = null;
+            try
+            {
+                user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            }
+            catch (Exception)
+            {
+            }
+            if (user != null)
+            {
+                var results = from o in db.Orders
+                              join fo in db.food_ordered on o.order_id equals fo.order_id
+                              join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                              join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
+                              join m in db.Merchants on mp.merchant_id equals m.merchant_id
+                              where o.user_id == user.Id
+                              where o.completed == true
+                              select new MenuBindingModels.OpenCloseOrder
+                              {
+                                  name = mp.name,
+                                  merchant_product_id = mp.merchant_product_id,
+                                  product_image = mp.product_image,
+                                  dish_completed = fo.served,
+                                  price = mp.price,
+                                  merchant_id = mp.merchant_id,
+                                  quantity = fo.quantity,
+                                  order_id = o.order_id,
+                                  order_bill = o.total_bill,
+                                  order_time = o.order_time,
+                                  table_id = o.table_id,
+                                  order_status = o.completed,
+                                  food_order_id = fo.food_ordered_id,
+                                  order_comment = o.comments,
+                                  food_comments = fo.comments,
+                                  merchant_name = m.biz_name
+                              } into t1
+                              group t1 by t1.order_id into g
+                              select g.ToList();
+
+                var OrderedFoodList = await results.ToListAsync();
+                if (results == null)
+                {
+                    return NotFound();
+                }
+                return Ok(OrderedFoodList);
+            }
+            else
+            {
+                return Ok("Invaild token");
+            }
+        }
+        // GET: api/GetAllOrders/
+        [ResponseType(typeof(MenuBindingModels.GetOrderedItems))]
+        [Route("api/UserAllOrders")]
+        public async Task<IHttpActionResult> GetUserAllOrders()
+        {
+            ApplicationUser user = null;
+            try
+            {
+                user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            }
+            catch (Exception)
+            {
+            }
+            if (user != null)
+            {
+                var results = from o in db.Orders
+                              join fo in db.food_ordered on o.order_id equals fo.order_id
+                              join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                              join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
+                              where o.user_id == user.Id
+
+                              select new MenuBindingModels.GetOrderedItems
+                              {
+                                  name = mp.name,
+                                  merchant_product_id = mp.merchant_product_id,
+                                  product_image = mp.product_image,
+                                  dish_completed = fo.served,
+                                  price = mp.price,
+                                  merchant_id = mp.merchant_id,
+                                  quantity = fo.quantity,
+                                  order_id = o.order_id,
+                                  order_bill = o.total_bill,
+                                  order_time = o.order_time,
+                                  table_id = o.table_id,
+                                  order_status = o.completed,
+                                  food_order_id = fo.food_ordered_id,
+                                  order_comment = o.comments,
+                                  food_comments = fo.comments
+                              } into t1
+                              group t1 by t1.order_id into g
+                              select g.ToList();
+                var OrderedFoodList = await results.ToListAsync();
+                if (results == null)
+                {
+                    return NotFound();
+                }
+                return Ok(OrderedFoodList);
+            }
+            else
+            {
+                return Ok("Invaild token");
+            }
+        }
+        //end limit to user's order
+
         // GET: api/GetOpenOrders/5
         [ResponseType(typeof(MenuBindingModels.OpenCloseOrder))]
         [Route("api/OpenOrders")]
@@ -422,7 +604,6 @@ namespace BYOD_Server.Controllers
 
         // POST: api/addFoodOrder
         [Route("api/addFoodOrder")]
-        [ResponseType(typeof(FoodOrdered))]
         public async Task<IHttpActionResult> PostAddFoodOrder(FoodOrdered food)
         {
             //add to order
@@ -433,9 +614,44 @@ namespace BYOD_Server.Controllers
             }
 
             db.food_ordered.Add(food);
-            await db.SaveChangesAsync();
+            db.SaveChanges();
+            //get current food and prices
+            var results = from o in db.Orders
+                          join fo in db.food_ordered on o.order_id equals fo.order_id
+                          join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                          join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
+                          join m in db.Merchants on mp.merchant_id equals m.merchant_id
+                          join outlet in db.Outlets on op.outlet_id equals outlet.outlet_id
+                          where o.order_id == food.order_id
+                          select new MenuBindingModels.CalculateBill
+                          {
+                              order_id = o.order_id,
+                              order_bill = o.total_bill,
+                              outlet_sc = outlet.servicecharge,
+                              outlet_gst = outlet.gst,
+                              mp_price = mp.price,
+                              food_quantity = fo.quantity
+                          } into t1
+                          group t1 by t1.order_id into g
+                          select g.ToList();
 
-            return Ok(food);
+            var OrderedFoodList = await results.ToListAsync();
+            var foodList = OrderedFoodList.First();
+            decimal foodsum = 0;
+            //calculate bill
+            foreach (var fooditem in foodList)
+            {
+                foodsum += fooditem.mp_price * fooditem.food_quantity;
+            }
+            foodsum += foodsum * foodList.First().outlet_sc / 100;
+            foodsum += foodsum * foodList.First().outlet_gst / 100;
+            //get order
+            Orders order = db.Orders.Find(food.order_id);
+            //save bill
+            order.total_bill = Math.Round(foodsum, 2);
+
+            await db.SaveChangesAsync();
+            return Ok();
         }
         //END: edit order
 
@@ -547,6 +763,14 @@ namespace BYOD_Server.Controllers
         [ResponseType(typeof(Orders))]
         public async Task<IHttpActionResult> PostSendOrders(Orders orders)
         {
+            ApplicationUser user = null;
+            try
+            {
+                user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            }
+            catch (Exception)
+            {
+            }
             //add to order
 
             if (!ModelState.IsValid)
@@ -554,6 +778,10 @@ namespace BYOD_Server.Controllers
                 return BadRequest(ModelState);
             }
             orders.order_time = DateTime.Now.AddHours(8);
+            if (user != null)
+            {
+                orders.user_id = user.Id;
+            }
             db.Orders.Add(orders);
             await db.SaveChangesAsync();
 

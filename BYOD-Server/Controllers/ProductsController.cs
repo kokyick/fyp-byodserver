@@ -30,29 +30,6 @@ namespace BYOD_Server.Controllers
         [ResponseType(typeof(OutletProduct))]
         public async Task<IHttpActionResult> GetOutletProduct(int outlet_id)
         {
-            //await db.outlet_product.Join(db.merchant_product,
-            //                     outletProduct => outletProduct.merchant_product_id,
-            //                     merchantProduct => merchantProduct.merchant_product_id,
-            //                     (outletProduct, merchantProduct) => outletProduct).Where(outletProduct.).ToListAsync();
-            //OutletProduct outletProduct = await db.outlet_product.FindAsync(outlet_id);
-            //if (outletProduct == null)
-            //{
-            //    return NotFound();
-            //}
-            //var MessageList = await db.merchant_product
-            //.Join(db.outlet_product, u => u.merchant_id, uir => uir.outlet_id,
-            //(u, uir) => new { u, uir })
-            //.Select(i => new 
-            //{
-            //    merchant_product_id = i.u.merchant_product_id,
-            //    name = i.u.name,
-            //    price = i.u.price,
-            //    product_image = i.u.product_image,
-            //    avg_ratings = i.u.avg_ratings,
-            //    outlet_id = i.uir.outlet_id
-            //})
-            //.Where(m => m.outlet_id == outlet_id)
-            //.ToListAsync();
             var results = from mp in db.merchant_product
                           join op in db.outlet_product on mp.merchant_product_id equals op.merchant_product_id
                           where (op.outlet_id == outlet_id && mp.deleted==false)
@@ -64,7 +41,9 @@ namespace BYOD_Server.Controllers
                               product_image = mp.product_image,
                               avg_ratings = mp.avg_ratings,
                               food_type_id = mp.food_type,
-                              outlet_id = op.outlet_id
+                              outlet_id = op.outlet_id,
+                              outofstock= op.out_of_stock,
+                              outletproduct_id = op.outlet_product_id
                           };
 
             var MessageList = await results.ToListAsync();
@@ -91,6 +70,7 @@ namespace BYOD_Server.Controllers
                               avg_ratings = mp.avg_ratings,
                               food_type_id = mp.food_type,
                               outlet_id = op.outlet_id,
+                              outofstock = op.out_of_stock,
                               outletproduct_id = op.outlet_product_id
                           };
 
@@ -108,6 +88,7 @@ namespace BYOD_Server.Controllers
         public async Task<IHttpActionResult> GetSingleProduct(int product_id)
         {
             var results = from mp in db.merchant_product
+                          join op in db.outlet_product on mp.merchant_product_id equals op.merchant_product_id
                           where (mp.merchant_product_id == product_id && mp.deleted==false)
                           select new 
                           {
@@ -116,7 +97,9 @@ namespace BYOD_Server.Controllers
                               price = mp.price,
                               product_image = mp.product_image,
                               avg_ratings = mp.avg_ratings,
-                              food_type = mp.food_type
+                              food_type = mp.food_type,
+                              outletproduct_id=op.outlet_product_id,
+                              outofstock = op.out_of_stock
                           };
 
             var Product = await results.FirstOrDefaultAsync();
@@ -126,6 +109,29 @@ namespace BYOD_Server.Controllers
             }
             return Ok(Product);
 
+        }
+        // POST: api/Products
+        [Route("api/outofstock")]
+        [ResponseType(typeof(OutletProduct))]
+        public async Task<IHttpActionResult> PostOFSProduct(MenuBindingModels.OutOfStock status)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var state = false;
+            if (status.stockstatus == 1)
+            {
+                state = true;
+            }
+            OutletProduct op= db.outlet_product.Find(status.OP_ID);
+            if (op != null)
+            {
+                op.out_of_stock = state;
+                await db.SaveChangesAsync();
+            }
+
+            return Ok(op);
         }
         // PUT: api/Products/5
         [ResponseType(typeof(void))]

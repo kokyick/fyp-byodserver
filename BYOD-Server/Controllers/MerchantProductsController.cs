@@ -11,6 +11,8 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using BYOD_Server.Models;
 using System.Web.Http.Cors;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.AspNet.Identity;
 
 namespace BYOD_Server.Controllers
 {
@@ -18,7 +20,18 @@ namespace BYOD_Server.Controllers
     public class MerchantProductsController : ApiController
     {
         private ApplicationDbContext db = new ApplicationDbContext();
-
+        private ApplicationUserManager _userManager;
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
         // GET: api/MerchantProducts
         public IQueryable<MerchantProduct> Getmerchant_product()
         {
@@ -39,16 +52,38 @@ namespace BYOD_Server.Controllers
             return Ok(merchantProduct);
         }
         // GET: api/GetMerchantProducts/5
+        [Authorize]
+        [Route("api/GetMerchantProduct")]
         [ResponseType(typeof(MerchantProduct))]
-        public async Task<IHttpActionResult> GetMerchantProducts(int merchant_id)
+        public async Task<IHttpActionResult> GetMerchantProducts()
         {
-            var merchantProduct = await db.merchant_product.Where(m => m.merchant_id == merchant_id && m.deleted != true).ToListAsync();
-            if (merchantProduct == null)
-            {
-                return NotFound();
-            }
+            ApplicationUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            var product = from mp in db.merchant_product
+                          join merchant in db.Merchants on mp.merchant_id equals merchant.merchant_id
+                          join u in db.Users on merchant.user_id equals u.Id
+                          where u.Id == user.Id
+                          where mp.deleted != true
+                          select new MenuBindingModels.MProduct
+                          {
+                              avg_ratings = mp.avg_ratings,
+                              deleted = mp.deleted,
+                              food_type = mp.food_type,
+                              merchant_id = mp.merchant_id,
+                              merchant_product_id = mp.merchant_product_id,
+                              name = mp.name,
+                              price = mp.price,
+                              product_image = mp.product_image
 
-            return Ok(merchantProduct);
+                          };
+            var productList = await product.ToListAsync();
+            return Ok(productList);
+            //var merchantProduct = await db.merchant_product.Where(m => m.merchant_id == merchant_id && m.deleted != true).ToListAsync();
+            //if (merchantProduct == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //return Ok(merchantProduct);
         }
 
         // PUT: api/MerchantProducts/5
@@ -134,7 +169,7 @@ namespace BYOD_Server.Controllers
 
             //OutletProduct outletProducts = await db.outlet_product.FindAsync(outletProd.outlet_product_id);
             OutletProduct outletProducts = await db.outlet_product
-              .Where(x => (x.merchant_product_id==(outletProd.merchant_product_id) 
+              .Where(x => (x.merchant_product_id == (outletProd.merchant_product_id)
               && x.outlet_id == (outletProd.outlet_id))).SingleOrDefaultAsync();
             //MerchantProduct product = await db.merchant_product.FindAsync(id);
             if (outletProducts == null)

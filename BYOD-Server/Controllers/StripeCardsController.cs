@@ -120,7 +120,7 @@ namespace BYOD_Server.Controllers
         }
 
         // POST: api/StripeCards
-        [Route("GetStripeCards")]
+        [Route("api/GetStripeCards")]
         [ResponseType(typeof(StripeCards))]
         public async Task<IHttpActionResult> GetStripeCards(CardModel card)
         {
@@ -135,9 +135,17 @@ namespace BYOD_Server.Controllers
 
             return Ok(stripeCards);
         }
+        // POST: api/StripeCards
+        [Route("api/GetCurrentUser")]
+        public async Task<IHttpActionResult> GetCurrentUser()
+        {
+            ApplicationUser user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+
+            return Ok(user.Id);
+        }
 
         // POST: api/StripeCards
-        [Route("AddStripeCards")]
+        [Route("api/AddStripeCards")]
         [ResponseType(typeof(StripeCards))]
         public async Task<IHttpActionResult> PostAddStripeCards(CardModel card)
         {

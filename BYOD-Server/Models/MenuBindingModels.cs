@@ -26,6 +26,7 @@ namespace BYOD_Server.Models
             public decimal avg_ratings { get; set; }
             public int food_type_id { get; set; }
             public int? outlet_id { get; set; }
+            public bool outofstock { get; set; }
             public int outletproduct_id { get; set; }
         }
         public class GetOrderedItems
@@ -109,6 +110,48 @@ namespace BYOD_Server.Models
             public decimal outlet_gst { get; set; }
             public decimal mp_price { get; set; }
             public int food_quantity { get; set; }
+        }
+        public class OutOfStock
+        {
+            public int OP_ID { get; set; }
+            public int stockstatus { get; set; }
+        }
+        public class MOutlet
+        {
+            public int outlet_id { get; set; }
+            public string featured_photo { get; set; }
+            public string name { get; set; }
+            public string streetname { get; set; }
+            public string unit_no { get; set; }
+            public string postal_code { get; set; }
+            public string contact_no { get; set; }
+            public double lat { get; set; }
+            public double lon { get; set; }
+            public DateTime? opening_time { get; set; }
+            public DateTime? closing_time { get; set; }
+            public bool opening_status { get; set; }
+            public decimal gst { get; set; }
+            public decimal servicecharge { get; set; }
+
+            //reviews & ratings
+            public DateTime? last_review_time { get; set; }
+            public decimal avg_ratings { get; set; }
+            public int total_comments { get; set; }
+
+            public int merchant_id { get; set; }
+        }
+        public class MProduct
+        {
+            public int merchant_product_id { get; set; }
+            public string name { get; set; }
+            public decimal price { get; set; }
+            public string product_image { get; set; }
+            public decimal avg_ratings { get; set; }
+            public bool deleted { get; set; }
+
+            public int food_type { get; set; }
+
+            public int merchant_id { get; set; }
         }
     }
 }

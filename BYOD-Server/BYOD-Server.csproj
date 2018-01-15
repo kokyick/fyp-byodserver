@@ -358,6 +358,10 @@
     <Compile Include="Migrations\201801090420238_ordertimeupdate.Designer.cs">
       <DependentUpon>201801090420238_ordertimeupdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801150228166_outofstock.cs" />
+    <Compile Include="Migrations\201801150228166_outofstock.Designer.cs">
+      <DependentUpon>201801150228166_outofstock.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -569,6 +573,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801090420238_ordertimeupdate.resx">
       <DependentUpon>201801090420238_ordertimeupdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801150228166_outofstock.resx">
+      <DependentUpon>201801150228166_outofstock.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

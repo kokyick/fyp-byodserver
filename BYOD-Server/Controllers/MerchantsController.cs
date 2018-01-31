@@ -15,7 +15,7 @@ using System.Web.Http.Cors;
 namespace BYOD_Server.Controllers
 {
     [RoutePrefix("api/Merchant")]
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    //[EnableCors(origins: "*", headers: "*", methods: "*")]
     public class MerchantsController : ApiController
     {
         private ApplicationDbContext db = new ApplicationDbContext();

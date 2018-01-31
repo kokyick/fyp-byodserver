@@ -135,3 +135,6 @@ C:\Users\Cho\Documents\Visual Studio 2017\Projects\BYOD-Server\BYOD-Server\obj\R
 C:\Users\Cho\Documents\Visual Studio 2017\Projects\BYOD-Server\BYOD-Server\obj\Release\BYOD_Server.Migrations.boolpaied.resources
 C:\Users\Cho\documents\visual studio 2017\Projects\BYOD-Server\BYOD-Server\obj\Release\BYOD_Server.Migrations.ordertimeupdate.resources
 C:\Users\Cho\Documents\Visual Studio 2017\Projects\BYOD-Server\BYOD-Server\obj\Release\BYOD_Server.Migrations.outofstock.resources
+C:\Users\Cho\Documents\Visual Studio 2017\Projects\BYOD-Server\BYOD-Server\obj\Release\BYOD_Server.Migrations._decimal.resources
+C:\Users\Cho\Documents\Visual Studio 2017\Projects\BYOD-Server\BYOD-Server\obj\Release\BYOD_Server.Migrations.dp.resources
+C:\Users\Cho\Documents\Visual Studio 2017\Projects\BYOD-Server\BYOD-Server\obj\Release\BYOD_Server.Migrations.foodadded.resources

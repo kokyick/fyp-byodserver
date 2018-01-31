@@ -18,7 +18,7 @@ using System.Web.Http.Cors;
 
 namespace BYOD_Server.Controllers
 {
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    //[EnableCors(origins: "*", headers: "*", methods: "*")]
     public class StripeCardsController : ApiController
     {
         private ApplicationDbContext db = new ApplicationDbContext();

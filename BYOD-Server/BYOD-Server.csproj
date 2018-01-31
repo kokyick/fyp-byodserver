@@ -362,6 +362,18 @@
     <Compile Include="Migrations\201801150228166_outofstock.Designer.cs">
       <DependentUpon>201801150228166_outofstock.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801210251067_decimal.cs" />
+    <Compile Include="Migrations\201801210251067_decimal.Designer.cs">
+      <DependentUpon>201801210251067_decimal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801221124264_dp.cs" />
+    <Compile Include="Migrations\201801221124264_dp.Designer.cs">
+      <DependentUpon>201801221124264_dp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801260834332_food added.cs" />
+    <Compile Include="Migrations\201801260834332_food added.Designer.cs">
+      <DependentUpon>201801260834332_food added.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -576,6 +588,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801150228166_outofstock.resx">
       <DependentUpon>201801150228166_outofstock.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801210251067_decimal.resx">
+      <DependentUpon>201801210251067_decimal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801221124264_dp.resx">
+      <DependentUpon>201801221124264_dp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801260834332_food added.resx">
+      <DependentUpon>201801260834332_food added.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

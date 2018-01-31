@@ -11,6 +11,7 @@ using Owin;
 using BYOD_Server.Providers;
 using BYOD_Server.Models;
 using System.Data.Entity.Migrations;
+using System.Web.Http.Cors;
 
 namespace BYOD_Server
 {
@@ -23,6 +24,13 @@ namespace BYOD_Server
         // For more information on configuring authentication, please visit https://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
         {
+            //app.Use(async (context, next) =>
+            //{
+            //    context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
+            //    await next();
+
+            //});
+
             // Configure the db context and user manager to use a single instance per request
             app.CreatePerOwinContext(ApplicationDbContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
@@ -51,6 +59,7 @@ namespace BYOD_Server
             var configuration = new Migrations.Configuration();
             var migrator = new DbMigrator(configuration);
             migrator.Update();
+            
 
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(

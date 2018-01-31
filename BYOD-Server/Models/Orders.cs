@@ -16,6 +16,7 @@ namespace BYOD_Server.Models
         public string comments { get; set; }
         public bool completed { get; set; }
         public bool paid { get; set; }
+        public bool recently_changed { get; set; }
         public int? promocode_id { get; set; }
         [ForeignKey("promocode_id")]
         public Promocodes promocod { get; set; }

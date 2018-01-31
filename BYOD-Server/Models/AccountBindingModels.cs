@@ -12,7 +12,21 @@ namespace BYOD_Server.Models
         [Display(Name = "External access token")]
         public string ExternalAccessToken { get; set; }
     }
-
+    public class UserDetail
+    {
+        public string first_name { get; set; }
+        public string last_name { get; set; }
+        public System.Collections.Generic.IList<string> role { get; set; }
+        public string email { get; set; }
+        public string dp { get; set; }
+    }
+    public class UserUpdate
+    {
+        public string first_name { get; set; }
+        public string last_name { get; set; }
+        public string email { get; set; }
+        public string dp { get; set; }
+    }
     public class ChangePasswordBindingModel
     {
         [Required]

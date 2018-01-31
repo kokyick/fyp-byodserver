@@ -65,6 +65,12 @@ namespace BYOD_Server.Models
             public string order_comment { get; set; }
             public string food_comments { get; set; }
             public string merchant_name { get; set; }
+            public string promocode_name { get; set; }
+            public DateTime? promo_start_date { get; set; }
+            public DateTime? promo_expire_date { get; set; }
+            public decimal? discount { get; set; }
+            public decimal gst { get; set; }
+            public decimal svscharge { get; set; }
         }
         public class FoodServed
         {
@@ -152,6 +158,13 @@ namespace BYOD_Server.Models
             public int food_type { get; set; }
 
             public int merchant_id { get; set; }
+        }
+
+        internal class NewlyAdded
+        {
+            internal int dish_id;
+
+            public bool newly_added { get; set; }
         }
     }
 }

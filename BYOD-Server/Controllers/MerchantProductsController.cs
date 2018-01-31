@@ -16,7 +16,7 @@ using Microsoft.AspNet.Identity;
 
 namespace BYOD_Server.Controllers
 {
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    //[EnableCors(origins: "*", headers: "*", methods: "*")]
     public class MerchantProductsController : ApiController
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -52,7 +52,7 @@ namespace BYOD_Server.Controllers
             return Ok(merchantProduct);
         }
         // GET: api/GetMerchantProducts/5
-        [Authorize]
+        //[Authorize]
         [Route("api/GetMerchantProduct")]
         [ResponseType(typeof(MerchantProduct))]
         public async Task<IHttpActionResult> GetMerchantProducts()

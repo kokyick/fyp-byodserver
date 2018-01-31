@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace BYOD_Server.Controllers
 {
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    //[EnableCors(origins: "*", headers: "*", methods: "*")]
     public class HomeController : Controller
     {
         public ActionResult Index()

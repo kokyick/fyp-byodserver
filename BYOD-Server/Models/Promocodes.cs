@@ -14,7 +14,7 @@ namespace BYOD_Server.Models
         public string promocode_name { get; set; }
         public DateTime? start_date { get; set; }
         public DateTime? expire_date { get; set; }
-        public decimal discount { get; set; }
+        public decimal? discount { get; set; }
         public ICollection<Orders> orders { get; set; }
     }
 }

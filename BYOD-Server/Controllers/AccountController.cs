@@ -17,14 +17,17 @@ using BYOD_Server.Models;
 using BYOD_Server.Providers;
 using BYOD_Server.Results;
 using System.Web.Http.Cors;
+using System.Web.Http.Description;
 
 namespace BYOD_Server.Controllers
 {
     [Authorize]
     [RoutePrefix("api/Account")]
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    //[EnableCors(origins: "*", headers: "*", methods: "*")]
     public class AccountController : ApiController
     {
+
+        private ApplicationDbContext db = new ApplicationDbContext();
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
 
@@ -48,6 +51,88 @@ namespace BYOD_Server.Controllers
             private set
             {
                 _userManager = value;
+            }
+        }
+        // GET: api/UserRole
+        [Route("UserData")]
+        [ResponseType(typeof(UserDetail))]
+        public async Task<IHttpActionResult> GetUserData()
+        {
+            ApplicationUser user = null;
+            try
+            {
+                user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            }
+            catch (Exception)
+            {
+            }
+            if (user != null)
+            {
+                var users = db.Users.Find(user.Id);
+                UserDetail ud = new UserDetail
+                {
+                    email = users.Email,
+                    first_name = user.first_name,
+                    last_name = user.last_name,
+                    dp= user.displaypic,
+                    role = UserManager.GetRoles(user.Id)
+                };
+
+                return Ok(ud);
+            }
+            else
+            {
+                return Ok("Invaild token");
+            }
+        }
+        // GET: api/UserRole
+        [Route("UserUpdate")]
+        [ResponseType(typeof(UserUpdate))]
+        public async Task<IHttpActionResult> PostUserData(UserUpdate ud)
+        {
+            ApplicationUser user = null;
+            try
+            {
+                user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            }
+            catch (Exception)
+            {
+            }
+            if (user != null)
+            {
+                ApplicationUser users = db.Users.Find(user.Id);
+                users.Email = ud.email;
+                users.displaypic = ud.dp;
+                users.first_name = ud.first_name;
+                users.last_name = ud.last_name;
+
+                await db.SaveChangesAsync();
+                return Ok(ud);
+            }
+            else
+            {
+                return Ok("Invaild token");
+            }
+        }
+        // GET: api/UserRole
+        [Route("UserRole")]
+        public async Task<IHttpActionResult> GetUserRole()
+        {
+            ApplicationUser user = null;
+            try
+            {
+                user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            }
+            catch (Exception)
+            {
+            }
+            if (user != null)
+            {
+                return Ok(UserManager.GetRoles(user.Id));
+            }
+            else
+            {
+                return Ok("Invaild token");
             }
         }
 
@@ -127,7 +212,7 @@ namespace BYOD_Server.Controllers
 
             IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
                 model.NewPassword);
-            
+
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
@@ -260,9 +345,9 @@ namespace BYOD_Server.Controllers
             if (hasRegistered)
             {
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-                
-                 ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                    OAuthDefaults.AuthenticationType);
+
+                ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
+                   OAuthDefaults.AuthenticationType);
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
@@ -339,6 +424,12 @@ namespace BYOD_Server.Controllers
                 return GetErrorResult(result);
             }
 
+            // Add User To Role
+            if (!UserManager.IsInRole(user.Id, "Customer"))
+            {
+                UserManager.AddToRole(user.Id, "Customer");
+            }
+
             return Ok();
         }
 
@@ -370,7 +461,7 @@ namespace BYOD_Server.Controllers
             result = await UserManager.AddLoginAsync(user.Id, info.Login);
             if (!result.Succeeded)
             {
-                return GetErrorResult(result); 
+                return GetErrorResult(result);
             }
             return Ok();
         }

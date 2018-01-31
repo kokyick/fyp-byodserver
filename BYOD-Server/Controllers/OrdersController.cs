@@ -17,7 +17,7 @@ using Microsoft.AspNet.Identity;
 
 namespace BYOD_Server.Controllers
 {
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    //[EnableCors(origins: "*", headers: "*", methods: "*")]
     public class OrdersController : ApiController
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -50,8 +50,11 @@ namespace BYOD_Server.Controllers
             if (user != null)
             {
                 var results = from o in db.Orders
+                              join p in db.Promocodes on o.promocode_id equals p.promocodes_id into joined
+                              from p in joined.DefaultIfEmpty()
                               join fo in db.food_ordered on o.order_id equals fo.order_id
                               join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                              join outlet in db.Outlets on op.outlet_id equals outlet.outlet_id
                               join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
                               join m in db.Merchants on mp.merchant_id equals m.merchant_id
                               where o.user_id == user.Id
@@ -73,7 +76,14 @@ namespace BYOD_Server.Controllers
                                   food_order_id = fo.food_ordered_id,
                                   food_comments = fo.comments,
                                   order_comment = o.comments,
-                                  merchant_name = m.biz_name
+                                  merchant_name = m.biz_name,
+                                  discount = p.discount,
+                                  promocode_name = p.promocode_name,
+                                  promo_start_date = p.start_date,
+                                  promo_expire_date = p.expire_date,
+                                  gst = outlet.gst,
+                                  svscharge = outlet.servicecharge
+
                               } into t1
                               group t1 by t1.order_id into g
                               select g.ToList();
@@ -106,8 +116,11 @@ namespace BYOD_Server.Controllers
             if (user != null)
             {
                 var results = from o in db.Orders
+                              join p in db.Promocodes on o.promocode_id equals p.promocodes_id into joined
+                              from p in joined.DefaultIfEmpty()
                               join fo in db.food_ordered on o.order_id equals fo.order_id
                               join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                              join outlet in db.Outlets on op.outlet_id equals outlet.outlet_id
                               join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
                               join m in db.Merchants on mp.merchant_id equals m.merchant_id
                               where o.user_id == user.Id
@@ -129,7 +142,13 @@ namespace BYOD_Server.Controllers
                                   food_order_id = fo.food_ordered_id,
                                   order_comment = o.comments,
                                   food_comments = fo.comments,
-                                  merchant_name = m.biz_name
+                                  merchant_name = m.biz_name,
+                                  discount = p.discount,
+                                  promocode_name = p.promocode_name,
+                                  promo_start_date = p.start_date,
+                                  promo_expire_date = p.expire_date,
+                                  gst = outlet.gst,
+                                  svscharge = outlet.servicecharge
                               } into t1
                               group t1 by t1.order_id into g
                               select g.ToList();
@@ -207,8 +226,11 @@ namespace BYOD_Server.Controllers
         public async Task<IHttpActionResult> GetOpenOrders()
         {
             var results = from o in db.Orders
+                          join p in db.Promocodes on o.promocode_id equals p.promocodes_id into joined
+                          from p in joined.DefaultIfEmpty()
                           join fo in db.food_ordered on o.order_id equals fo.order_id
                           join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                          join outlet in db.Outlets on op.outlet_id equals outlet.outlet_id
                           join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
                           join m in db.Merchants on mp.merchant_id equals m.merchant_id
                           where o.completed == false
@@ -229,7 +251,13 @@ namespace BYOD_Server.Controllers
                               food_order_id = fo.food_ordered_id,
                               food_comments = fo.comments,
                               order_comment = o.comments,
-                              merchant_name = m.biz_name
+                              merchant_name = m.biz_name,
+                              discount = p.discount,
+                              promocode_name = p.promocode_name,
+                              promo_start_date = p.start_date,
+                              promo_expire_date = p.expire_date,
+                              gst = outlet.gst,
+                              svscharge = outlet.servicecharge
                           } into t1
                           group t1 by t1.order_id into g
                           select g.ToList();
@@ -247,8 +275,11 @@ namespace BYOD_Server.Controllers
         public async Task<IHttpActionResult> GetClosedOrders()
         {
             var results = from o in db.Orders
+                          join p in db.Promocodes on o.promocode_id equals p.promocodes_id into joined
+                          from p in joined.DefaultIfEmpty()
                           join fo in db.food_ordered on o.order_id equals fo.order_id
                           join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                          join outlet in db.Outlets on op.outlet_id equals outlet.outlet_id
                           join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
                           join m in db.Merchants on mp.merchant_id equals m.merchant_id
                           where o.completed == true
@@ -269,7 +300,13 @@ namespace BYOD_Server.Controllers
                               food_order_id = fo.food_ordered_id,
                               order_comment = o.comments,
                               food_comments = fo.comments,
-                              merchant_name = m.biz_name
+                              merchant_name = m.biz_name,
+                              discount = p.discount,
+                              promocode_name = p.promocode_name,
+                              promo_start_date = p.start_date,
+                              promo_expire_date = p.expire_date,
+                              gst = outlet.gst,
+                              svscharge = outlet.servicecharge
                           } into t1
                           group t1 by t1.order_id into g
                           select g.ToList();
@@ -363,15 +400,18 @@ namespace BYOD_Server.Controllers
         [ResponseType(typeof(MenuBindingModels.GetOrderedItems))]
         public async Task<IHttpActionResult> GetOrdersFood(int orderid)
         {
-            var results = from fo in db.food_ordered
+            var results = from o in db.Orders
+                          join p in db.Promocodes on o.promocode_id equals p.promocodes_id into joined
+                          from p in joined.DefaultIfEmpty()
+                          join fo in db.food_ordered on o.order_id equals fo.order_id
                           join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                          join outlet in db.Outlets on op.outlet_id equals outlet.outlet_id
                           join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
-                          join o in db.Orders on fo.order_id equals o.order_id
+                          join m in db.Merchants on mp.merchant_id equals m.merchant_id
                           where o.order_id == orderid
-                          select new MenuBindingModels.GetOrderedItems
+                          select new MenuBindingModels.OpenCloseOrder
                           {
                               name = mp.name,
-                              order_time = o.order_time,
                               merchant_product_id = mp.merchant_product_id,
                               product_image = mp.product_image,
                               dish_completed = fo.served,
@@ -380,9 +420,19 @@ namespace BYOD_Server.Controllers
                               quantity = fo.quantity,
                               order_id = o.order_id,
                               order_bill = o.total_bill,
+                              order_time = o.order_time,
+                              table_id = o.table_id,
                               order_status = o.completed,
+                              food_order_id = fo.food_ordered_id,
                               order_comment = o.comments,
-                              food_comments = fo.comments
+                              food_comments = fo.comments,
+                              merchant_name = m.biz_name,
+                              discount = p.discount,
+                              promocode_name = p.promocode_name,
+                              promo_start_date = p.start_date,
+                              promo_expire_date = p.expire_date,
+                              gst = outlet.gst,
+                              svscharge = outlet.servicecharge
                           };
 
             var OrderedFoodList = await results.ToListAsync();
@@ -429,8 +479,11 @@ namespace BYOD_Server.Controllers
         public async Task<IHttpActionResult> GetOneOrdersDetails(int orderid)
         {
             var results = from o in db.Orders
+                          join p in db.Promocodes on o.promocode_id equals p.promocodes_id into joined
+                          from p in joined.DefaultIfEmpty()
                           join fo in db.food_ordered on o.order_id equals fo.order_id
                           join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                          join outlet in db.Outlets on op.outlet_id equals outlet.outlet_id
                           join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
                           join m in db.Merchants on mp.merchant_id equals m.merchant_id
                           where o.order_id == orderid
@@ -451,7 +504,13 @@ namespace BYOD_Server.Controllers
                               food_order_id = fo.food_ordered_id,
                               order_comment = o.comments,
                               food_comments = fo.comments,
-                              merchant_name = m.biz_name
+                              merchant_name = m.biz_name,
+                              discount = p.discount,
+                              promocode_name = p.promocode_name,
+                              promo_start_date = p.start_date,
+                              promo_expire_date = p.expire_date,
+                              gst = outlet.gst,
+                              svscharge = outlet.servicecharge
                           } into t1
                           group t1 by t1.order_id into g
                           select g.ToList();
@@ -460,6 +519,83 @@ namespace BYOD_Server.Controllers
             if (results == null)
             {
                 return NotFound();
+            }
+            return Ok(OrderedFoodList);
+        }
+
+        // GET: api/Orders/5
+        [Route("api/NewlyAddedFoodOrder")]
+        [ResponseType(typeof(MenuBindingModels.GetOrderedItems))]
+        public async Task<IHttpActionResult> GetNewlyAddedFoodOrder(int outlet_id)
+        {
+            var results = from o in db.Orders
+                          join p in db.Promocodes on o.promocode_id equals p.promocodes_id into joined
+                          from p in joined.DefaultIfEmpty()
+                          join fo in db.food_ordered on o.order_id equals fo.order_id
+                          join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                          join outlet in db.Outlets on op.outlet_id equals outlet.outlet_id
+                          join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
+                          join m in db.Merchants on mp.merchant_id equals m.merchant_id
+                          where outlet.outlet_id == outlet_id
+                          where o.recently_changed == true
+                          where fo.newly_added == true
+                          select new MenuBindingModels.OpenCloseOrder
+                          {
+                              name = mp.name,
+                              merchant_product_id = mp.merchant_product_id,
+                              product_image = mp.product_image,
+                              dish_completed = fo.served,
+                              price = mp.price,
+                              merchant_id = mp.merchant_id,
+                              quantity = fo.quantity,
+                              order_id = o.order_id,
+                              order_bill = o.total_bill,
+                              order_time = o.order_time,
+                              table_id = o.table_id,
+                              order_status = o.completed,
+                              food_order_id = fo.food_ordered_id,
+                              order_comment = o.comments,
+                              food_comments = fo.comments,
+                              merchant_name = m.biz_name,
+                              discount = p.discount,
+                              promocode_name = p.promocode_name,
+                              promo_start_date = p.start_date,
+                              promo_expire_date = p.expire_date,
+                              gst = outlet.gst,
+                              svscharge = outlet.servicecharge
+                          } into t1
+                          group t1 by t1.order_id into g
+                          select g.ToList();
+
+            var OrderedFoodList = await results.ToListAsync();
+            if (results == null)
+            {
+                return NotFound();
+            }
+            // change order updated & recently add boolean to false
+            //change json to array
+            //var ofa = OrderedFoodList.ToArray();
+            int order_idd = OrderedFoodList[0][0].order_id;
+            Orders ord = db.Orders.Find(order_idd);
+            ord.recently_changed = false;
+            var dishes = from dis in db.food_ordered
+                         where dis.order_id == order_idd
+                         select new MenuBindingModels.NewlyAdded
+                         {
+                             dish_id = dis.food_ordered_id,
+                             newly_added = dis.newly_added
+                         };
+            var dishCList = dishes.ToArray();
+            await db.SaveChangesAsync();
+            for (int yt = 0; yt < dishCList.Length; yt++)
+            {
+                if (dishCList[yt].newly_added == true)
+                {
+                    int food_ord_id = dishCList[yt].dish_id;
+                    FoodOrdered fds = db.food_ordered.Find(food_ord_id);
+                    fds.newly_added = false;
+                    db.SaveChanges();
+                }
             }
             return Ok(OrderedFoodList);
         }
@@ -653,6 +789,119 @@ namespace BYOD_Server.Controllers
             await db.SaveChangesAsync();
             return Ok();
         }
+        // POST: api/addFoodOrder
+        [Route("api/addExtraFoodOrder")]
+        public async Task<IHttpActionResult> PostAddExtraFoodOrder(FoodOrdered[] food)
+        {
+            //add to order
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            for (int hi = 0; hi < food.Length; hi++)
+            {
+                food[hi].newly_added = true;
+                db.food_ordered.Add(food[hi]);
+                db.SaveChanges();
+            }
+            var order_id = food[0].order_id;
+            Orders or = db.Orders.Find(order_id);
+            or.recently_changed = true;
+            db.SaveChanges();
+            //get current food and prices
+            var results = from o in db.Orders
+                          join fo in db.food_ordered on o.order_id equals fo.order_id
+                          join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                          join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
+                          join m in db.Merchants on mp.merchant_id equals m.merchant_id
+                          join outlet in db.Outlets on op.outlet_id equals outlet.outlet_id
+                          where o.order_id == order_id
+                          select new MenuBindingModels.CalculateBill
+                          {
+                              order_id = o.order_id,
+                              order_bill = o.total_bill,
+                              outlet_sc = outlet.servicecharge,
+                              outlet_gst = outlet.gst,
+                              mp_price = mp.price,
+                              food_quantity = fo.quantity
+                          } into t1
+                          group t1 by t1.order_id into g
+                          select g.ToList();
+
+            var OrderedFoodList = await results.ToListAsync();
+            var foodList = OrderedFoodList.First();
+            decimal foodsum = 0;
+            //calculate bill
+            foreach (var fooditem in foodList)
+            {
+                foodsum += fooditem.mp_price * fooditem.food_quantity;
+            }
+            foodsum += foodsum * foodList.First().outlet_sc / 100;
+            foodsum += foodsum * foodList.First().outlet_gst / 100;
+            //get order
+            Orders order = db.Orders.Find(order_id);
+            //save bill
+            order.total_bill = Math.Round(foodsum, 2);
+
+            await db.SaveChangesAsync();
+            return Ok();
+        }
+        // POST: api/addFoodOrder
+        [Route("api/addOneExtraFoodOrder")]
+        public async Task<IHttpActionResult> PostAddOneExtraFoodOrder(FoodOrdered food)
+        {
+            //add to order
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            food.newly_added = true;
+            db.food_ordered.Add(food);
+            db.SaveChanges();
+            var order_id = food.order_id;
+            Orders or = db.Orders.Find(order_id);
+            or.recently_changed = true;
+            db.SaveChanges();
+            //get current food and prices
+            var results = from o in db.Orders
+                          join fo in db.food_ordered on o.order_id equals fo.order_id
+                          join op in db.outlet_product on fo.outlet_product_id equals op.outlet_product_id
+                          join mp in db.merchant_product on op.merchant_product_id equals mp.merchant_product_id
+                          join m in db.Merchants on mp.merchant_id equals m.merchant_id
+                          join outlet in db.Outlets on op.outlet_id equals outlet.outlet_id
+                          where o.order_id == order_id
+                          select new MenuBindingModels.CalculateBill
+                          {
+                              order_id = o.order_id,
+                              order_bill = o.total_bill,
+                              outlet_sc = outlet.servicecharge,
+                              outlet_gst = outlet.gst,
+                              mp_price = mp.price,
+                              food_quantity = fo.quantity
+                          } into t1
+                          group t1 by t1.order_id into g
+                          select g.ToList();
+
+            var OrderedFoodList = await results.ToListAsync();
+            var foodList = OrderedFoodList.First();
+            decimal foodsum = 0;
+            //calculate bill
+            foreach (var fooditem in foodList)
+            {
+                foodsum += fooditem.mp_price * fooditem.food_quantity;
+            }
+            foodsum += foodsum * foodList.First().outlet_sc / 100;
+            foodsum += foodsum * foodList.First().outlet_gst / 100;
+            //get order
+            Orders order = db.Orders.Find(order_id);
+            //save bill
+            order.total_bill = Math.Round(foodsum, 2);
+
+            await db.SaveChangesAsync();
+            return Ok();
+        }
         //END: edit order
 
         // POST: api/CashPaid
@@ -679,7 +928,7 @@ namespace BYOD_Server.Controllers
             }
         }
         // POST: api/foodServed
-        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        //[EnableCors(origins: "*", headers: "*", methods: "*")]
         [Route("api/FoodServed")]
         [ResponseType(typeof(MenuBindingModels.FoodServed))]
         public async Task<IHttpActionResult> FoodServed(MenuBindingModels.FoodServed fo)
@@ -722,7 +971,7 @@ namespace BYOD_Server.Controllers
         }
 
         // POST: api/foodServed
-        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        //[EnableCors(origins: "*", headers: "*", methods: "*")]
         [Route("api/AllFoodServed")]
         [ResponseType(typeof(FoodOrdered))]
         public async Task<IHttpActionResult> AllFoodServed(int order_id)

@@ -14,6 +14,7 @@ namespace BYOD_Server.Models
         public bool served { get; set; }
         public int quantity { get; set; }
         public string comments { get; set; }
+        public bool newly_added { get; set; }
 
         public int outlet_product_id { get; set; }
         [ForeignKey("outlet_product_id")]

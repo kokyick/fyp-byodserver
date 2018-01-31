@@ -16,6 +16,7 @@ namespace BYOD_Server.Models
         public string last_name { get; set; }
         public System.DateTime? date_joined { get; set; }
         public int strip_id { get; set; }
+        public string displaypic { get; set; }
 
         public ICollection<Merchants> merchant { get; set; }
         public ICollection<ReviewRatings> review { get; set; }

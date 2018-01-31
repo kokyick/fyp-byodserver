@@ -14,7 +14,7 @@ using System.Web.Http.Cors;
 
 namespace BYOD_Server.Controllers
 {
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    //[EnableCors(origins: "*", headers: "*", methods: "*")]
     public class FoodTypesController : ApiController
     {
         private ApplicationDbContext db = new ApplicationDbContext();
